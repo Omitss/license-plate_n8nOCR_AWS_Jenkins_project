@@ -89,11 +89,29 @@ async def detect_plate(file: UploadFile = File(...)) -> DetectResponse:
     filename = file.filename or "upload.jpg"
 
     try:
+        print("=" * 50)
+        print("WEBHOOK_URL =", WEBHOOK_URL)
+        print("filename =", filename)
+        print("content_type =", file.content_type)
+        print("size =", len(image_bytes))
+
         response = requests.post(
             WEBHOOK_URL,
-            files={"file": (filename, image_bytes, file.content_type or "image/jpeg")},
+            files={
+                "file": (
+                    filename,
+                    image_bytes,
+                    file.content_type or "image/jpeg",
+                )
+            },
             timeout=30,
         )
+
+        print("STATUS =", response.status_code)
+        print("HEADERS =", dict(response.headers))
+        print("BODY =", response.text)
+        print("=" * 50)
+
     except requests.RequestException as exc:
         raise HTTPException(status_code=502, detail=f"n8n 요청 실패: {exc}") from exc
 
